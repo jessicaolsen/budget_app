@@ -13,15 +13,14 @@ class Category():
         else : 
             number_stars1 = int((30 - header_length) / 2) + 1
             number_stars2 = int((30 - header_length) / 2) 
-        header = number_stars1 + self.category_name + number_stars2
+        header = "*" * number_stars1 + self.category_name + "*" * number_stars2
         ledger = ""
         for item in self.ledger : 
-            line_description = "(:<23)".format(item["description"])
-            line_amount = "(:7.2f)".format(item["amount"])
+            line_description = "{:<23}".format(item["description"])
+            line_amount = "{:7.2f}".format(item["amount"])
             ledger += "{}{}\n".format(line_description[:23], line_amount[:7])
         total = "Total: {:.2f}".format(self.balance)
-        return header + ledger + total
-
+        return header + "\n" + ledger + total
 
     #Defining Check Funds
     def check_funds(self, amount) : 
@@ -31,14 +30,16 @@ class Category():
             return True
 
     #Defining Deposit
-    def deposit(self, amount, description) : 
-        if bool(description) == False : 
-            description = ''
+    def deposit(self, amount, description = False) : 
+        if description == False : 
+            description = ""
         self.ledger.append({"amount": amount, "description": description})
         self.balance += amount
     
     #Defining Withdraw
-    def withdraw(self, amount, description) :
+    def withdraw(self, amount, description = "") :
+        if description == False : 
+            description = ""
         if bool(self.check_funds(amount)) == False : 
             return False
         else : 
@@ -55,8 +56,8 @@ class Category():
          if bool(self.check_funds(amount)) == False : 
             return False
          else: 
-            self.withdraw(amount, "Transfer to " + category_other)
-            category_other.deposit(amount,"Transfer from " + self)
+            self.withdraw(amount, "Transfer to {}".format(category_other.category_name))
+            category_other.deposit(amount,"Transfer from {}".format(self.category_name))
             return True 
     
     
@@ -69,3 +70,20 @@ class Category():
 def create_spend_chart(categories):
     pass
 
+
+
+food = Category("Food")
+food.deposit(1000, "initial deposit")
+food.withdraw(10.15, "groceries")
+food.withdraw(15.89, "restaurant and more food for dessert")
+print(food.get_balance())
+clothing = Category("Clothing")
+food.transfer(50, clothing)
+clothing.withdraw(25.55)
+clothing.withdraw(100)
+auto = Category("Auto")
+auto.deposit(1000, "initial deposit")
+auto.withdraw(15)
+
+print(food)
+print(clothing)
