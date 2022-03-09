@@ -60,9 +60,48 @@ class Category():
             category_other.deposit(amount,"Transfer from {}".format(self.category_name))
             return True 
     
-#
+#Creating the Spend Chart
 def create_spend_chart(categories):
-    pass
+    spent_amount = []
+    
+    #Get total spend in each category 
+    for category in categories : 
+        spent = 0
+        for item in category.ledger: 
+            if item["amount"] <= 0 :
+                spent += abs(item["amount"])
+        spent_amount.append(round(spent,2))
+
+    #Calculate Percentage and Round down to nearest 10
+    total = sum(spent_amount)
+    
+    #problem somewhere in this loop
+    for item in category.ledger : 
+        spend_percentage = int((abs(item["amount"]/total)*10))
+        round_down = round(spend_percentage/10) * 10
+    
+    return spend_percentage
+    header = "Percentage spent by category\n"
+
+    chart = ""
+    for value in reversed(range(0,101, 10)) :
+        chart += str(value).rjust(3) + '|'
+        for percentage in range(round_down): 
+            if percentage >= value :
+                chart += "o"
+            else : 
+                chart += " "
+        chart += " \n"
+
+    footer = "   " + "-" * ((3 * len(categories)) + 1) + "\n"
+    descriptions = list(map(lambda category: category.category_name, categories))
+    max_length = max(map(lambda description : len(description), descriptions))
+    descriptions = list(map(lambda description: description.ljust(max_length), descriptions))
+    for x in zip(*descriptions): 
+        footer += "    " + "".join(map(lambda s: s.center(3), x)) + " \n"
+    
+    return (header + chart + footer).rstrip("\n")
+    
 
 
 
@@ -81,3 +120,6 @@ auto.withdraw(15)
 
 print(food)
 print(clothing)
+print(auto)
+
+print(create_spend_chart([food, clothing, auto]))
