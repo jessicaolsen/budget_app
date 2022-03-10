@@ -74,23 +74,18 @@ def create_spend_chart(categories):
 
     #Calculate Percentage and Round down to nearest 10
     total = sum(spent_amount)
+    spend_percentage = list(map(lambda amount : int(((amount/total)*10//1)*10), spent_amount))
     
-    #problem somewhere in this loop
-    for item in category.ledger : 
-        spend_percentage = int((abs(item["amount"]/total)*10))
-        round_down = round(spend_percentage/10) * 10
-    
-    return spend_percentage
     header = "Percentage spent by category\n"
 
     chart = ""
     for value in reversed(range(0,101, 10)) :
         chart += str(value).rjust(3) + '|'
-        for percentage in range(round_down): 
+        for percentage in spend_percentage: 
             if percentage >= value :
-                chart += "o"
+                chart += " o "
             else : 
-                chart += " "
+                chart += "   "
         chart += " \n"
 
     footer = "   " + "-" * ((3 * len(categories)) + 1) + "\n"
